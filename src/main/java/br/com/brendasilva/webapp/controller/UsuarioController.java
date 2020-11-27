@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  
@@ -143,5 +144,22 @@ public class UsuarioController {
  
 		/*RETORNA A VIEW*/
 	    return new ModelAndView("consultarCadastros");
+	}
+	
+	/***
+	 * EXCLUI UM REGISTRO DO SISTEMA PELO CÓDIGO
+	 * @param codigoUsuario
+	 * @return
+	 */
+	@RequestMapping(value="/excluir", method= RequestMethod.POST)
+	public ModelAndView excluir(@RequestParam("codigoUsuario") Long codigoUsuario){
+ 
+		ModelAndView modelAndView = new ModelAndView("redirect:/usuario/consultar");
+ 
+		/*EXCLUINDO O REGISTRO*/
+		this.usuarioService.excluir(codigoUsuario);
+ 
+		/*RETORNANDO A VIEW*/
+		return modelAndView;
 	}
 }

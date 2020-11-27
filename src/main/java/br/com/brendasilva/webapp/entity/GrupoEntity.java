@@ -21,7 +21,7 @@ public class GrupoEntity implements Serializable {
 	 
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq_id_grupo")
-	@SequenceGenerator(name="seq_id_grupo", sequenceName="seq_id_grupo")  	
+	@SequenceGenerator(name="seq_id_grupo", sequenceName="seq_id_grupo", allocationSize=1)  	
 	@Column(name="id_grupo")
 	private Long codigo;
  

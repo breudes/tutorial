@@ -22,7 +22,7 @@ public class UsuarioEntity implements Serializable {
 	 
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq_id_usuario")
-	@SequenceGenerator(name="seq_id_usuario", sequenceName="seq_id_usuario")  	
+	@SequenceGenerator(name="seq_id_usuario", sequenceName="seq_id_usuario", allocationSize=1)  	
 	@Column(name="id_usuario")
 	private Long	codigo;
  

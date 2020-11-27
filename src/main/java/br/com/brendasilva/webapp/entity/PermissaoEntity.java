@@ -19,7 +19,7 @@ public class PermissaoEntity implements Serializable {
 	 
 	@Id
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="seq_id_permissao")
-	@SequenceGenerator(name="seq_id_permissao", sequenceName="seq_id_permissao")  	
+	@SequenceGenerator(name="seq_id_permissao", sequenceName="seq_id_permissao", allocationSize=1)  	
 	@Column(name="id_permissao")	
 	private Long codigo;
  

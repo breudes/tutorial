@@ -17,4 +17,14 @@ public class MainController {
 	    return "index";
 	}
 	
+	/***
+	 * CARREGA À PÁGINA INICIAL DA APLICAÇÃO APÓS EFETUARMOS O LOGIN 
+	 * @return
+	 */
+	@RequestMapping(value="/home", method= RequestMethod.GET)
+	public String home(){
+ 
+		return "home";
+	}
+	
 }

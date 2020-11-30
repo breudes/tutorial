@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -158,6 +159,115 @@ public class UsuarioController {
  
 		/*EXCLUINDO O REGISTRO*/
 		this.usuarioService.excluir(codigoUsuario);
+ 
+		/*RETORNANDO A VIEW*/
+		return modelAndView;
+	}
+	
+	/***
+	 * CONSULTA UM USUÁRIO PELO CÓDIGO PARA REALIZAR ALTERAÇÕES NAS INFORAMÇÕES CADASTRADAS.
+	 * @param codigoUsuario
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/editarCadastro", method= RequestMethod.GET)		
+	public ModelAndView editarCadastro(@RequestParam("codigoUsuario") Long codigoUsuario, Model model) {
+ 
+		/*CONSULTA OS GRUPOS CADASTRADOS*/
+		List<GrupoModel> gruposModel =grupoService.consultarGrupos();			
+ 
+		/*CONSULTA O USUÁRIO PELO CÓDIGO*/
+		UsuarioModel usuarioModel = this.usuarioService.consultarUsuario(codigoUsuario);
+ 
+		/*DEIXA SELECIONADO OS GRUPOS CADASTRADOS PARA O USUÁRIO*/
+		gruposModel.forEach(grupo ->{
+ 
+		    usuarioModel.getGrupos().forEach(grupoCadastrado->{
+ 
+		 	if(grupoCadastrado!= null){
+			    if(grupo.getCodigo().equals(grupoCadastrado))
+				grupo.setChecked(true);
+			}					
+		    });				
+ 
+		});
+ 
+ 
+		/*ADICIONANDO GRUPOS PARA MOSTRAR NA PÁGINA(VIEW)*/
+		model.addAttribute("grupos", gruposModel);
+ 
+		/*ADICIONANDO INFORMAÇÕES DO USUÁRIO PARA MOSTRAR NA PÁGINA(VIEW)*/
+		model.addAttribute("usuarioModel", usuarioModel);
+ 
+		/*CHAMA A VIEW /src/main/resources/templates/editarCadastro.html*/
+	    return new ModelAndView("editarCadastro");
+	 }
+ 
+         /***
+	 * SALVA AS ALTERAÇÕES REALIZADAS NO CADASTRO DO USUÁRIO
+	 * @param usuarioModel
+	 * @param result
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequestMapping(value="/salvarAlteracao", method= RequestMethod.POST)
+	public ModelAndView salvarAlteracao(@ModelAttribute 
+					    @Valid UsuarioModel usuarioModel, 
+					    final BindingResult result,
+					    Model model,
+					   RedirectAttributes redirectAttributes){
+ 
+		boolean isErroNullCampos = false;
+ 
+		/*AQUI ESTAMOS VERIFICANDO SE TEM ALGUM CAMPO QUE NÃO ESTÁ PREENCHIDO,
+		 * MENOS O CAMPO DA SENHA, POIS SE O USUÁRIO NÃO INFORMAR VAMOS MANTER A
+		 * SENHA JÁ CADASTRADA*/
+		for (FieldError fieldError : result.getFieldErrors()) {
+		    if(!fieldError.getField().equals("senha")){
+		 	isErroNullCampos = true;	
+		    }	
+		}
+ 
+		/*SE ENCONTROU ERRO DEVEMOS RETORNAR PARA A VIEW PARA QUE O 
+		 * USUÁRIO TERMINE DE INFORMAR OS DADOS*/
+		if(isErroNullCampos){
+ 
+		    List<GrupoModel> gruposModel =grupoService.consultarGrupos();			
+ 
+		    gruposModel.forEach(grupo ->{
+ 
+		         if(usuarioModel.getGrupos() != null && usuarioModel.getGrupos().size() >0){
+ 
+			     /*DEIXA CHECADO OS GRUPOS QUE O USUÁRIO SELECIONOU*/
+			     usuarioModel.getGrupos().forEach(grupoSelecionado->{
+ 
+			         if(grupoSelecionado!= null){
+				    if(grupo.getCodigo().equals(grupoSelecionado))
+				        grupo.setChecked(true);
+			         }					
+		             });				
+			  }
+ 
+		     });
+ 
+		     /*ADICIONANDO GRUPOS PARA MOSTRAR NA PÁGINA(VIEW)*/
+		     model.addAttribute("grupos", gruposModel);
+ 
+		     /*ADICIONANDO O OBJETO usuarioModel PARA MOSTRAR NA PÁGINA(VIEW) AS INFORMAÇÕES DO USUÁRIO*/
+		     model.addAttribute("usuarioModel", usuarioModel);
+ 
+		     /*RETORNANDO A VIEW*/
+		     return new ModelAndView("editarCadastro");	
+		}else{
+ 
+		     /*SALVANDO AS INFORMAÇÕES ALTERADAS DO USUÁRIO*/
+		     usuarioService.alterarUsuario(usuarioModel);
+ 
+		}
+ 
+		/*APÓS SALVAR VAMOS REDIRICIONAR O USUÁRIO PARA A PÁGINA DE CONSULTA*/
+		ModelAndView modelAndView = new ModelAndView("redirect:/usuario/consultar");
  
 		/*RETORNANDO A VIEW*/
 		return modelAndView;
